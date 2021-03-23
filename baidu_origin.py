@@ -9,7 +9,7 @@ import random
 import os
 import numpy as np
 import cv2
-from retinaface_cov import RetinaFaceCoV
+# from retinaface_cov import RetinaFaceCoV
 
 
 def decode_url(url):
@@ -88,39 +88,41 @@ def save_pic(org_url, url, save_path):
     file_lx = 'jpg'
     if 'png' in url:
         file_lx = file_lx.replace('jpg', 'png')
-    scales = [640, 1080]
-    detector = RetinaFaceCoV('./model/mnet_cov2', 0, gpuid, 'net3l')
-    faceDet(np.fromfile(img),scales,detector,1,save_path + '\\' + str(cnt) + '.' + file_lx)
+    # scales = [640, 1080]
+    # detector = RetinaFaceCoV('./model/mnet_cov2', 0, gpuid, 'net3l')
+    with open(save_path + '\\' + str(cnt) + '.' + file_lx, 'wb') as f2:
+        f2.write(img)
+    #faceDet(np.fromfile(img),scales,detector,1,save_path + '\\' + str(cnt) + '.' + file_lx)
 
 
-def faceDet(img,scales,detector,count,filename):
-    im_shape = img.shape
-    target_size = scales[0]
-    max_size = scales[1]
-    im_size_min = np.min(im_shape[0:2])
-    im_size_max = np.max(im_shape[0:2])
-    im_scale = float(target_size) / float(im_size_min)
-
-    if np.round(im_scale * im_size_max) > max_size:
-        im_scale = float(max_size) / float(im_size_max)
-
-    # print('im_scale', im_scale)
-
-    n_scales = [im_scale]
-
-    for c in range(count):
-        faces,_ = detector.detect(img,thresh,scales=n_scales,do_flip=flip)
-
-    if faces is not None:
-        # print('find', faces.shape[0], 'faces')
-        for i in range(faces.shape[0]):
-            #print('score', faces[i][4])
-            face = faces[i]
-            box = face[0:4].astype(np.int)
-            mask = face[5]
-            x,y = box[2]-box[0],box[3]-box[1]
-            img = img[box[1]:box[3],box[0]:box[2]]
-            cv2.imwrite(filename, img)
+# def faceDet(img,scales,detector,count,filename):
+#     im_shape = img.shape
+#     target_size = scales[0]
+#     max_size = scales[1]
+#     im_size_min = np.min(im_shape[0:2])
+#     im_size_max = np.max(im_shape[0:2])
+#     im_scale = float(target_size) / float(im_size_min)
+#
+#     if np.round(im_scale * im_size_max) > max_size:
+#         im_scale = float(max_size) / float(im_size_max)
+#
+#     # print('im_scale', im_scale)
+#
+#     n_scales = [im_scale]
+#
+#     for c in range(count):
+#         faces,_ = detector.detect(img,thresh,scales=n_scales,do_flip=flip)
+#
+#     if faces is not None:
+#         # print('find', faces.shape[0], 'faces')
+#         for i in range(faces.shape[0]):
+#             #print('score', faces[i][4])
+#             face = faces[i]
+#             box = face[0:4].astype(np.int)
+#             mask = face[5]
+#             x,y = box[2]-box[0],box[3]-box[1]
+#             img = img[box[1]:box[3],box[0]:box[2]]
+#             cv2.imwrite(filename, img)
 
 
 thresh = 0.8
@@ -130,7 +132,7 @@ flip = True
 gpuid = 0
 path = 'E:\\pic'
 data = {}
-with open('baidu_pic_count3.csv.csv', 'r', encoding='utf-8') as f:
+with open('baidu_pic_count3.csv', 'r', encoding='utf-8') as f:
     for line in f:
         a = line.strip().split(',')
         data[a[0]] = [a[1], int(a[3])]
